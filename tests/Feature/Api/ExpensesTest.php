@@ -156,7 +156,7 @@ test('deletes an expense', function () {
     $response = $this->deleteJson("/api/expenses/{$expense->id}");
 
     $response->assertOk();
-    $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
+    $this->assertSoftDeleted('expenses', ['id' => $expense->id]);
 });
 
 test('only admin can delete an expense', function () {
@@ -205,7 +205,7 @@ test('audit log is created on delete of an expense', function () {
     $response = $this->deleteJson("/api/expenses/{$expense->id}");
 
     $response->assertOk();
-    $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
+    $this->assertSoftDeleted('expenses', ['id' => $expense->id]);
 
     $audit = AuditLog::all();
     expect($audit)->toHaveCount(1);

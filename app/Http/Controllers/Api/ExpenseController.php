@@ -79,4 +79,15 @@ class ExpenseController extends Controller
 
         return $this->success(null, 'Expense deleted successfully');
     }
+
+    public function restore($expenseId)
+    {
+        $expense = Expense::withTrashed()->findOrFail($expenseId);
+
+        $this->authorize('delete', $expense);
+
+        $expense->restore();
+
+        return $this->success(new ExpenseResource($expense), 'Expense restored successfully');
+    }
 }

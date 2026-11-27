@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Traits\ApiResponse;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -41,6 +42,10 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson()) {
             if ($exception instanceof ValidationException) {
                 return $this->validationError($exception->errors(), 'Validation error');
+            }
+
+            if ($exception instanceof ModelNotFoundException) {
+                return $this->notFound();
             }
 
             if ($exception instanceof NotFoundHttpException) {
