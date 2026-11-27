@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\AuditLog;
@@ -42,4 +43,14 @@ Route::middleware(['throttle:3,1'])->group(function () {
 
 Route::middleware(['throttle:5,1'])->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::middleware(['throttle:10,1'])->group(function () {
+    Route::post('/verify-email', [EmailVerificationController::class, 'verify'])->name('verify-email');
+    Route::post('/resend-verification-email', [EmailVerificationController::class, 'resend'])->name('resend-verification');
+});
+
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
 });

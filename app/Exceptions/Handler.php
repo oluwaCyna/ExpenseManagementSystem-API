@@ -8,6 +8,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -48,6 +49,10 @@ class Handler extends ExceptionHandler
 
             if ($exception instanceof MethodNotAllowedHttpException) {
                 return $this->error('The requested method is not allowed.', 405);
+            }
+
+            if ($exception instanceof TooManyRequestsHttpException) {
+                return $this->error('Too Many Attempts.', 429);
             }
 
             if ($exception instanceof AuthorizationException) {
