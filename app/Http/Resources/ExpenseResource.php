@@ -18,6 +18,8 @@ class ExpenseResource extends JsonResource
             'amount' => $this->amount,
             'currency' => $this->currency,
             'category' => $this->category,
+            'status' => $this->status?->value,
+            'rejection_reason' => $this->rejection_reason,
             $this->mergeWhen($this->shouldInclude('user'), fn () => [
                 'user' => new UserResource($this->whenLoaded('user')),
             ]),

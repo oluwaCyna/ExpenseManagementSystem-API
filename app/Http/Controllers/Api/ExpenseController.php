@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ExpenseStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApproveExpenseRequest;
 use App\Http\Requests\ExpenseListRequest;
+use App\Http\Requests\RejectExpenseRequest;
+use App\Http\Requests\ResubmitExpenseRequest;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
+use App\Models\ExpenseApproval;
 use App\Services\CacheService;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
@@ -91,5 +96,77 @@ class ExpenseController extends Controller
         $expense->restore();
 
         return $this->success(new ExpenseResource($expense), 'Expense restored successfully');
+    }
+
+    public function approve(ApproveExpenseRequest $request, Expense $expense)
+    {
+        $this->authorize('approve', $expense);
+
+        if ($expense->status !== ExpenseStatus::Pending) {
+            return $this->error('Only pending expenses can be approved', 422);
+        }
+
+        $validated = $request->validated();
+
+        ExpenseApproval::create([
+            'expense_id' => $expense->id,
+            'approved_by' => auth()->id(),
+            'action' => 'approved',
+            'comment' => $validated['comment'] ?? null,
+        ]);
+
+        $expense->update(['status' => ExpenseStatus::Approved]);
+
+        return $this->success(new ExpenseResource($expense), 'Expense approved successfully');
+    }
+
+    public function reject(RejectExpenseRequest $request, Expense $expense)
+    {
+        $this->authorize('approve', $expense);
+
+        if ($expense->status !== ExpenseStatus::Pending) {
+            return $this->error('Only pending expenses can be rejected', 422);
+        }
+
+        $validated = $request->validated();
+
+        ExpenseApproval::create([
+            'expense_id' => $expense->id,
+            'approved_by' => auth()->id(),
+            'action' => 'rejected',
+            'comment' => $validated['rejection_reason'],
+        ]);
+
+        $expense->update([
+            'status' => ExpenseStatus::Rejected,
+            'rejection_reason' => $validated['rejection_reason'],
+        ]);
+
+        return $this->success(new ExpenseResource($expense), 'Expense rejected successfully');
+    }
+
+    public function resubmit(ResubmitExpenseRequest $request, Expense $expense)
+    {
+        $this->authorize('resubmit', $expense);
+
+        if ($expense->status !== ExpenseStatus::Rejected) {
+            return $this->error('Only rejected expenses can be resubmitted', 422);
+        }
+
+        $validated = $request->validated();
+
+        ExpenseApproval::create([
+            'expense_id' => $expense->id,
+            'approved_by' => auth()->id(),
+            'action' => 'resubmitted',
+            'comment' => $validated['comment'] ?? null,
+        ]);
+
+        $expense->update([
+            'status' => ExpenseStatus::Pending,
+            'rejection_reason' => null,
+        ]);
+
+        return $this->success(new ExpenseResource($expense), 'Expense resubmitted successfully');
     }
 }

@@ -2,7 +2,7 @@
 
 **Last Updated**: 2026-11-27 (Phase 3: In Progress)  
 **Current Phase**: Phase 3 (Advanced Features)  
-**Overall Completion**: 70% (Phase 1: 10/10 COMPLETE, Phase 2: 3/3 COMPLETE, Phase 3: 3/5 IN PROGRESS)
+**Overall Completion**: 72% (Phase 1: 10/10 COMPLETE, Phase 2: 3/3 COMPLETE, Phase 3: 4/5 IN PROGRESS)
 
 ---
 
@@ -12,7 +12,7 @@
 
 **Objective**: Add valuable product features (attachments, exports, multi-currency, approval workflows, dashboards).
 
-**Phase Status**: IN PROGRESS 🔄 (1/5 tasks complete - Expense Attachments feature delivered)
+**Phase Status**: IN PROGRESS 🔄 (4/5 tasks complete - Approval Workflow feature delivered)
 
 ---
 
@@ -43,14 +43,31 @@
 - [x] Task P3-001: Add Expense Attachments ✅ DONE
 - [x] Task P3-002: Implement CSV/PDF Export ✅ DONE
 - [x] Task P3-003: Implement Multi-Currency Support ✅ DONE
-- [ ] Task P3-004: Implement Expense Approval Workflow
+- [x] Task P3-004: Implement Expense Approval Workflow ✅ DONE
 - [ ] Task P3-005: Create Admin Dashboard API Endpoints
 
-**Phase 3 Completion**: 60% (3/5 tasks)
+**Phase 3 Completion**: 80% (4/5 tasks)
 
 ---
 
 ## Completed Work
+
+### Milestone 8: Expense Approval Workflow (✅ COMPLETE)
+
+#### Tasks Completed:
+- ✅ P3-004: Expense approval workflow with full status tracking and history
+
+#### Implementation Details:
+- ✅ ExpenseStatus enum with Pending, Approved, Rejected, Reimbursed statuses
+- ✅ ExpenseApproval model to track approval history with comments
+- ✅ Status and rejection_reason fields added to expenses table
+- ✅ Expense approval workflow: approve, reject, resubmit actions
+- ✅ Authorization policies: only managers/admins can approve/reject, only expense owners can resubmit
+- ✅ Approval records created for all status transitions
+- ✅ 21 comprehensive tests covering all workflow scenarios
+- ✅ Full workflow tracking from creation to approval
+- ✅ Support for rejection reasons and resubmission comments
+- ✅ Cross-company authorization checks
 
 ### Milestone 7: Multi-Currency Support (✅ COMPLETE)
 

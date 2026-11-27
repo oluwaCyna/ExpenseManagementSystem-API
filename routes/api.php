@@ -31,6 +31,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
     Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
     Route::post('/expenses/{expense}/restore', [ExpenseController::class, 'restore']);
+    Route::post('/expenses/{expense}/approve', [ExpenseController::class, 'approve']);
+    Route::post('/expenses/{expense}/reject', [ExpenseController::class, 'reject']);
+    Route::post('/expenses/{expense}/resubmit', [ExpenseController::class, 'resubmit']);
     Route::get('/expenses/export', [ExportController::class, 'expenses']);
 
     Route::get('/expenses/{expense}/attachments', [ExpenseAttachmentController::class, 'index']);

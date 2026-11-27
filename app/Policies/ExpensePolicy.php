@@ -50,6 +50,24 @@ class ExpensePolicy
     }
 
     /**
+     * Determine whether the user can approve the model.
+     */
+    public function approve(User $user, Expense $expense): bool
+    {
+        return in_array($user->role, ['Admin', 'Manager']) &&
+            $user->company_id === $expense->company_id;
+    }
+
+    /**
+     * Determine whether the user can resubmit the model.
+     */
+    public function resubmit(User $user, Expense $expense): bool
+    {
+        return $user->id === $expense->user_id &&
+            $user->company_id === $expense->company_id;
+    }
+
+    /**
      * Determine whether the user can restore the model.
      */
     public function restore(User $user, Expense $expense): bool

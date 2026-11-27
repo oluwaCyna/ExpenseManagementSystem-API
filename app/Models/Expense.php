@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\ExpenseStatus;
 use App\Services\CacheService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,21 +23,32 @@ class Expense extends Model
         'amount',
         'category',
         'currency',
+        'status',
+        'rejection_reason',
     ];
 
-    public function user()
+    protected $casts = [
+        'status' => ExpenseStatus::class,
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function attachments()
+    public function attachments(): HasMany
     {
         return $this->hasMany(ExpenseAttachment::class);
     }
 
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(ExpenseApproval::class);
     }
 
     public function scopeAuthCompany($query)
