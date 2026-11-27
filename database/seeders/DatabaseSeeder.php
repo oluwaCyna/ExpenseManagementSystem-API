@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        $this->call(ExpenseCategorySeeder::class);
+
         $companies = Company::factory()
             ->count(5)
             ->create();

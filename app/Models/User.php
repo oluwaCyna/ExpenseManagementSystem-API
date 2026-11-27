@@ -3,12 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\CacheService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -82,14 +82,7 @@ class User extends Authenticatable
 
     protected function flushCache($user)
     {
-        $tagKey = "users.company.{$user->company_id}";
-        $keys = Cache::get($tagKey, []);
-
-        foreach ($keys as $key) {
-            Cache::forget($key);
-        }
-
-        Cache::forget($tagKey);
+        app(CacheService::class)->flushUserCache($user->company_id);
     }
 
     protected static function booted()

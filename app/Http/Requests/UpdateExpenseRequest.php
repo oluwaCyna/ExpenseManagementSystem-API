@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExpenseCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateExpenseRequest extends FormRequest
@@ -16,7 +17,7 @@ class UpdateExpenseRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'max:255'],
             'amount' => ['sometimes', 'numeric', 'min:0.01', 'max:999999.99'],
-            'category' => ['sometimes', 'string', 'max:100'],
+            'category' => ['sometimes', 'string', 'in:'.implode(',', ExpenseCategory::labels())],
         ];
     }
 
@@ -29,7 +30,7 @@ class UpdateExpenseRequest extends FormRequest
             'amount.min' => 'Amount must be greater than 0.',
             'amount.max' => 'Amount cannot exceed 999,999.99.',
             'category.string' => 'Category must be a text value.',
-            'category.max' => 'Category cannot exceed 100 characters.',
+            'category.in' => 'Invalid category selected. Valid categories are: '.implode(', ', ExpenseCategory::labels()),
         ];
     }
 }

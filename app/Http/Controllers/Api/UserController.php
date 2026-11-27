@@ -5,35 +5,35 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\UserListRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\CacheService;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function __construct(private CacheService $cacheService) {}
+
+    public function index(UserListRequest $request)
     {
         $this->authorize('viewAny', User::class);
 
-        $page = request('page', 1);
+        $validated = $request->validated();
+        $page = $validated['page'] ?? 1;
         $companyId = auth()->user()->company_id;
-        $cacheKey = "users.page.{$page}.company.{$companyId}";
 
-        $users = Cache::remember($cacheKey, now()->addHours(24), function () {
-            return User::authCompany()->latest()->paginate(10);
-        });
-
-        $tagKey = "users.company.{$companyId}";
-
-        $keys = Cache::get($tagKey, []);
-        $keys[] = $cacheKey;
-
-        Cache::put($tagKey, array_unique($keys), now()->addHours(24));
+        $users = $this->cacheService->getUsersList(
+            $companyId,
+            $page,
+            function () {
+                return User::authCompany()->latest()->paginate(10);
+            }
+        );
 
         return UserResource::collection($users);
     }

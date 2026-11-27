@@ -3,42 +3,43 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExpenseListRequest;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
+use App\Services\CacheService;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class ExpenseController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function __construct(private CacheService $cacheService) {}
+
+    public function index(ExpenseListRequest $request)
     {
         $companyId = auth()->user()->company_id;
-        $page = request('page', 1);
-        $search = request('search', '');
-        $cacheKey = "expenses.page.{$page}.search.{$search}.company.{$companyId}";
+        $validated = $request->validated();
+        $page = $validated['page'] ?? 1;
+        $search = $validated['search'] ?? '';
 
-        $expenses = Cache::remember($cacheKey, now()->addHours(24), function () use ($search) {
-            $expenses = Expense::authCompany();
+        $expenses = $this->cacheService->getExpensesList(
+            $companyId,
+            $page,
+            $search,
+            function () use ($search) {
+                $expenses = Expense::authCompany();
 
-            $expenses->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                    ->orWhere('category', 'like', "%$search%");
-            });
+                $expenses->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%$search%")
+                        ->orWhere('category', 'like', "%$search%");
+                });
 
-            return $expenses->with('user')->latest()->paginate(10);
-        });
-
-        $tagKey = "expenses.company.{$companyId}";
-
-        $keys = Cache::get($tagKey, []);
-        $keys[] = $cacheKey;
-
-        Cache::put($tagKey, array_unique($keys), now()->addHours(24));
+                return $expenses->with('user')->latest()->paginate(10);
+            }
+        );
 
         return ExpenseResource::collection($expenses);
     }

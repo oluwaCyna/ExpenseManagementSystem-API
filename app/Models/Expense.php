@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\CacheService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class Expense extends Model
 {
@@ -52,14 +52,7 @@ class Expense extends Model
 
     protected function flushCache($expense)
     {
-        $tagKey = "expenses.company.{$expense->company_id}";
-        $keys = Cache::get($tagKey, []);
-
-        foreach ($keys as $key) {
-            Cache::forget($key);
-        }
-
-        Cache::forget($tagKey);
+        app(CacheService::class)->flushExpenseCache($expense->company_id);
     }
 
     protected static function booted()
