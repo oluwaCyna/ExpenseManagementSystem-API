@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmailVerificationController;
+use App\Http\Controllers\Api\ExpenseAttachmentController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
@@ -29,6 +30,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
     Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
     Route::post('/expenses/{expense}/restore', [ExpenseController::class, 'restore']);
+
+    Route::get('/expenses/{expense}/attachments', [ExpenseAttachmentController::class, 'index']);
+    Route::post('/expenses/{expense}/attachments', [ExpenseAttachmentController::class, 'store']);
+    Route::delete('/expenses/{expense}/attachments/{attachment}', [ExpenseAttachmentController::class, 'destroy']);
+    Route::get('/attachments/{attachment}/download', [ExpenseAttachmentController::class, 'download'])->name('attachments.download');
 
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);

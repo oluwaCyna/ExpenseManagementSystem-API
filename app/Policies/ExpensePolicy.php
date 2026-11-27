@@ -18,9 +18,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(): bool
+    public function view(User $user, Expense $expense): bool
     {
-        return false;
+        return $user->company_id === $expense->company_id;
     }
 
     /**
