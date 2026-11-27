@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\ExpenseAttachmentController;
 use App\Http\Controllers\Api\ExpenseController;
@@ -51,6 +52,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
 
         return response()->json(AuditLog::authCompany()->latest()->paginate(20), 200);
+    });
+
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/stats', [DashboardController::class, 'stats']);
+        Route::get('/spending-by-category', [DashboardController::class, 'spendingByCategory']);
+        Route::get('/top-expenses', [DashboardController::class, 'topExpenses']);
+        Route::get('/trends', [DashboardController::class, 'trends']);
+        Route::get('/user-activity', [DashboardController::class, 'userActivity']);
     });
 });
 

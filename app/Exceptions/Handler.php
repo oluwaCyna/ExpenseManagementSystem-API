@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Traits\ApiResponse;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +43,10 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson()) {
             if ($exception instanceof ValidationException) {
                 return $this->validationError($exception->errors(), 'Validation error');
+            }
+
+            if ($exception instanceof AuthenticationException) {
+                return $this->error('Unauthenticated.', 401);
             }
 
             if ($exception instanceof ModelNotFoundException) {
