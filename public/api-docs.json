@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Expense Management System API",
-    "description": "A comprehensive REST API for managing company expenses with multi-tenant support, role-based access control, and audit logging.",
+    "description": "Complete REST API for expense management with multi-tenant support, role-based access control, and audit logging.",
     "version": "1.0.0",
     "contact": {
       "name": "API Support",
@@ -22,12 +22,298 @@
       "description": "Production Server"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "token",
+        "description": "Laravel Sanctum API token"
+      }
+    },
+    "schemas": {
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Admin",
+              "Manager",
+              "Employee"
+            ],
+            "example": "Admin"
+          },
+          "company_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "email_verified_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-27T12:34:56.000000Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CompanyResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "ACME Corporation"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "contact@acme.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ExpenseResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Office Supplies"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Printer ink and paper"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float",
+            "example": 150.5
+          },
+          "category": {
+            "type": "string",
+            "example": "Supplies"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Approved",
+              "Rejected"
+            ],
+            "example": "Pending"
+          },
+          "user_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "company_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "expense_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-27"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "AttachmentResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "file_name": {
+            "type": "string",
+            "example": "receipt.pdf"
+          },
+          "file_path": {
+            "type": "string",
+            "example": "expenses/receipts/receipt.pdf"
+          },
+          "file_size": {
+            "type": "integer",
+            "example": 102400
+          },
+          "mime_type": {
+            "type": "string",
+            "example": "application/pdf"
+          },
+          "expense_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuditLogResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "event": {
+            "type": "string",
+            "example": "created"
+          },
+          "auditable_type": {
+            "type": "string",
+            "example": "App\\Models\\Expense"
+          },
+          "auditable_id": {
+            "type": "integer",
+            "example": 5
+          },
+          "user_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "example": 1
+          },
+          "old_values": {
+            "type": "object"
+          },
+          "new_values": {
+            "type": "object"
+          },
+          "url": {
+            "type": "string",
+            "example": "/api/expenses"
+          },
+          "user_agent": {
+            "type": "string"
+          },
+          "ip_address": {
+            "type": "string",
+            "example": "127.0.0.1"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "integer",
+            "example": 1
+          },
+          "from": {
+            "type": "integer",
+            "example": 1
+          },
+          "last_page": {
+            "type": "integer",
+            "example": 5
+          },
+          "per_page": {
+            "type": "integer",
+            "example": 15
+          },
+          "to": {
+            "type": "integer",
+            "example": 15
+          },
+          "total": {
+            "type": "integer",
+            "example": 75
+          }
+        }
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string",
+            "format": "uri"
+          },
+          "last": {
+            "type": "string",
+            "format": "uri"
+          },
+          "prev": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          }
+        }
+      }
+    }
+  },
   "paths": {
     "/register": {
       "post": {
-        "tags": ["Authentication"],
-        "summary": "Register a new company and admin user",
-        "description": "Creates a new company and registers the first admin user. This endpoint has rate limiting of 3 requests per minute.",
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register new company and admin user",
         "operationId": "register",
         "requestBody": {
           "required": true,
@@ -35,45 +321,45 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email", "password", "password_confirmation", "company_name", "company_email"],
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "password_confirmation",
+                  "company_name",
+                  "company_email"
+                ],
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Full name of the admin user",
-                    "example": "John Doe",
                     "minLength": 2,
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "John Doe"
                   },
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Email address of the admin user",
                     "example": "john@example.com"
                   },
                   "password": {
                     "type": "string",
                     "format": "password",
-                    "description": "Password for the admin user (at least 8 characters)",
-                    "example": "SecurePassword123!",
-                    "minLength": 8
+                    "minLength": 8,
+                    "example": "SecurePass123!"
                   },
                   "password_confirmation": {
                     "type": "string",
-                    "format": "password",
-                    "description": "Password confirmation (must match password)",
-                    "example": "SecurePassword123!"
+                    "example": "SecurePass123!"
                   },
                   "company_name": {
                     "type": "string",
-                    "description": "Name of the company",
-                    "example": "ACME Corporation",
                     "minLength": 2,
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "ACME Corp"
                   },
                   "company_email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Company email address",
                     "example": "contact@acme.com"
                   }
                 }
@@ -83,7 +369,7 @@
         },
         "responses": {
           "201": {
-            "description": "Company and admin user created successfully",
+            "description": "Company and admin user registered",
             "content": {
               "application/json": {
                 "schema": {
@@ -95,7 +381,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Admin user for the company registered successfully"
+                      "example": "Admin user registered successfully"
                     },
                     "data": {
                       "type": "object",
@@ -105,8 +391,7 @@
                         },
                         "token": {
                           "type": "string",
-                          "description": "API access token for authentication",
-                          "example": "1|abcdefghijklmnopqrstuvwxyz"
+                          "example": "1|token123"
                         }
                       }
                     }
@@ -116,43 +401,20 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "error"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Validation failed"
-                    },
-                    "errors": {
-                      "type": "object",
-                      "example": {
-                        "email": ["The email has already been taken."],
-                        "company_email": ["The company email has already been taken."]
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Validation error"
           },
           "429": {
-            "description": "Too many requests (rate limited: 3 per minute)"
+            "description": "Too many requests"
           }
         }
       }
     },
     "/login": {
       "post": {
-        "tags": ["Authentication"],
-        "summary": "Login and get API token",
-        "description": "Authenticates a user and returns an API access token. This endpoint has rate limiting of 5 requests per minute.",
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login and get access token",
         "operationId": "login",
         "requestBody": {
           "required": true,
@@ -160,19 +422,20 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password"],
+                "required": [
+                  "email",
+                  "password"
+                ],
                 "properties": {
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "User email address",
                     "example": "john@example.com"
                   },
                   "password": {
                     "type": "string",
                     "format": "password",
-                    "description": "User password",
-                    "example": "SecurePassword123!"
+                    "example": "SecurePass123!"
                   }
                 }
               }
@@ -200,8 +463,7 @@
                       "properties": {
                         "token": {
                           "type": "string",
-                          "description": "API access token for authentication",
-                          "example": "1|abcdefghijklmnopqrstuvwxyz"
+                          "example": "1|token123"
                         },
                         "user": {
                           "$ref": "#/components/schemas/UserResource"
@@ -214,7 +476,251 @@
             }
           },
           "401": {
-            "description": "Invalid credentials",
+            "description": "Invalid credentials"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/verify-email": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Verify email address",
+        "operationId": "verifyEmail",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "123456",
+                    "description": "OTP code sent to email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Invalid or expired code"
+          }
+        }
+      }
+    },
+    "/resend-verification-email": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Resend verification email",
+        "operationId": "resendVerificationEmail",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification email sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      }
+    },
+    "/forgot-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Request password reset",
+        "operationId": "forgotPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset link sent to email"
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      }
+    },
+    "/reset-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Reset password with token",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "email",
+                  "password",
+                  "password_confirmation"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "example": "reset_token_xyz"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 8,
+                    "example": "NewPass123!"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "NewPass123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": [
+          "Profile Management"
+        ],
+        "summary": "Get authenticated user profile",
+        "operationId": "getProfile",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/UserResource"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Profile Management"
+        ],
+        "summary": "Update user profile",
+        "operationId": "updateProfile",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 255,
+                    "example": "John Doe Updated"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "newemail@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -222,31 +728,92 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "example": "error"
+                      "example": "success"
                     },
                     "message": {
                       "type": "string",
-                      "example": "Invalid credentials"
+                      "example": "Profile updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResource"
                     }
                   }
                 }
               }
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "422": {
             "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/change-password": {
+      "post": {
+        "tags": [
+          "Profile Management"
+        ],
+        "summary": "Change user password",
+        "operationId": "changePassword",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "current_password",
+                  "password",
+                  "password_confirmation"
+                ],
+                "properties": {
+                  "current_password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "CurrentPass123!"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 8,
+                    "example": "NewPass123!"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "NewPass123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully"
           },
-          "429": {
-            "description": "Too many requests (rate limited: 5 per minute)"
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Validation error or incorrect current password"
           }
         }
       }
     },
     "/expenses": {
       "get": {
-        "tags": ["Expenses"],
-        "summary": "List all expenses for the authenticated user's company",
-        "description": "Retrieves a paginated list of expenses with optional search and relationship includes. Only expenses from the user's company are returned.",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "List company expenses (paginated)",
         "operationId": "listExpenses",
         "security": [
           {
@@ -257,30 +824,88 @@
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination (default: 1)",
             "schema": {
               "type": "integer",
-              "default": 1,
-              "minimum": 1
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 15
             }
           },
           {
             "name": "search",
             "in": "query",
-            "description": "Search expenses by title or category",
             "schema": {
               "type": "string",
-              "example": "Office Supplies"
+              "example": "Office"
             }
           },
           {
-            "name": "include",
+            "name": "category",
             "in": "query",
-            "description": "Include related resources. Options: user, company. Multiple values separated by comma.",
             "schema": {
               "type": "string",
-              "enum": ["user", "company", "user,company"],
-              "example": "user,company"
+              "example": "Supplies"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Pending",
+                "Approved",
+                "Rejected"
+              ]
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-01-01"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-11-27"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "amount",
+                "title"
+              ],
+              "default": "created_at"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
             }
           }
         ],
@@ -315,9 +940,10 @@
         }
       },
       "post": {
-        "tags": ["Expenses"],
-        "summary": "Create a new expense",
-        "description": "Creates a new expense for the authenticated user's company.",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Create new expense",
         "operationId": "createExpense",
         "security": [
           {
@@ -330,28 +956,37 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "amount", "category"],
+                "required": [
+                  "title",
+                  "amount",
+                  "category"
+                ],
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Expense title/description",
-                    "example": "Office Supplies",
                     "minLength": 3,
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Office Supplies"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Printer ink and paper"
                   },
                   "amount": {
                     "type": "number",
-                    "format": "float",
-                    "description": "Expense amount in company currency",
-                    "example": 150.50,
-                    "minimum": 0.01
+                    "minimum": 0.01,
+                    "example": 150.5
                   },
                   "category": {
                     "type": "string",
-                    "description": "Expense category",
-                    "example": "Supplies",
                     "minLength": 2,
-                    "maxLength": 50
+                    "maxLength": 50,
+                    "example": "Supplies"
+                  },
+                  "expense_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-11-27"
                   }
                 }
               }
@@ -360,7 +995,7 @@
         },
         "responses": {
           "201": {
-            "description": "Expense created successfully",
+            "description": "Expense created",
             "content": {
               "application/json": {
                 "schema": {
@@ -393,9 +1028,10 @@
     },
     "/expenses/{expenseId}": {
       "put": {
-        "tags": ["Expenses"],
-        "summary": "Update an existing expense",
-        "description": "Updates an expense. Only the owner of the expense or company admins can update it.",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Update expense",
         "operationId": "updateExpense",
         "security": [
           {
@@ -407,7 +1043,6 @@
             "name": "expenseId",
             "in": "path",
             "required": true,
-            "description": "ID of the expense to update",
             "schema": {
               "type": "integer",
               "example": 1
@@ -423,24 +1058,24 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Expense title/description",
-                    "example": "Updated Office Supplies",
-                    "minLength": 3,
-                    "maxLength": 255
+                    "example": "Updated Office Supplies"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description"
                   },
                   "amount": {
                     "type": "number",
-                    "format": "float",
-                    "description": "Expense amount",
-                    "example": 175.75,
-                    "minimum": 0.01
+                    "minimum": 0.01,
+                    "example": 175.75
                   },
                   "category": {
                     "type": "string",
-                    "description": "Expense category",
-                    "example": "Supplies",
-                    "minLength": 2,
-                    "maxLength": 50
+                    "example": "Supplies"
+                  },
+                  "expense_date": {
+                    "type": "string",
+                    "format": "date"
                   }
                 }
               }
@@ -449,7 +1084,7 @@
         },
         "responses": {
           "200": {
-            "description": "Expense updated successfully",
+            "description": "Expense updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -458,10 +1093,6 @@
                     "status": {
                       "type": "string",
                       "example": "success"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Expense updated successfully"
                     },
                     "data": {
                       "$ref": "#/components/schemas/ExpenseResource"
@@ -475,7 +1106,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - User does not have permission to update this expense"
+            "description": "Forbidden"
           },
           "404": {
             "description": "Expense not found"
@@ -486,9 +1117,10 @@
         }
       },
       "delete": {
-        "tags": ["Expenses"],
-        "summary": "Delete an expense",
-        "description": "Deletes an expense. Only company admins can delete expenses.",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Delete/soft-delete expense",
         "operationId": "deleteExpense",
         "security": [
           {
@@ -500,7 +1132,6 @@
             "name": "expenseId",
             "in": "path",
             "required": true,
-            "description": "ID of the expense to delete",
             "schema": {
               "type": "integer",
               "example": 1
@@ -509,7 +1140,410 @@
         ],
         "responses": {
           "200": {
-            "description": "Expense deleted successfully",
+            "description": "Expense deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/restore": {
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Restore soft-deleted expense",
+        "operationId": "restoreExpense",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense restored"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/approve": {
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Approve expense (manager/admin)",
+        "operationId": "approveExpense",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notes": {
+                    "type": "string",
+                    "example": "Approved for reimbursement"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Expense approved"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Expense not found"
+          },
+          "422": {
+            "description": "Cannot approve non-pending expense"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/reject": {
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Reject expense with reason",
+        "operationId": "rejectExpense",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "reason"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "example": "Missing required documentation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Expense rejected"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Expense not found"
+          },
+          "422": {
+            "description": "Cannot reject non-pending expense"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/resubmit": {
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Resubmit rejected expense",
+        "operationId": "resubmitExpense",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notes": {
+                    "type": "string",
+                    "example": "Added missing documentation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Expense resubmitted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Expense not found"
+          },
+          "422": {
+            "description": "Can only resubmit rejected expenses"
+          }
+        }
+      }
+    },
+    "/expenses/export": {
+      "get": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Export expenses",
+        "operationId": "exportExpenses",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "csv",
+                "pdf"
+              ],
+              "default": "csv"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Pending",
+                "Approved",
+                "Rejected"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File exported successfully",
+            "content": {
+              "text/csv": {},
+              "application/pdf": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Invalid parameters"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/attachments": {
+      "get": {
+        "tags": [
+          "Attachments"
+        ],
+        "summary": "List expense attachments",
+        "operationId": "listAttachments",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of attachments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AttachmentResource"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Attachments"
+        ],
+        "summary": "Upload attachment",
+        "operationId": "uploadAttachment",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File to upload (max 10MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Attachment uploaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -521,7 +1555,10 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Expense deleted successfully"
+                      "example": "File uploaded successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AttachmentResource"
                     }
                   }
                 }
@@ -531,20 +1568,111 @@
           "401": {
             "description": "Unauthorized"
           },
-          "403": {
-            "description": "Forbidden - Only admins can delete expenses"
-          },
           "404": {
             "description": "Expense not found"
+          },
+          "422": {
+            "description": "File validation error"
+          }
+        }
+      }
+    },
+    "/expenses/{expenseId}/attachments/{attachmentId}": {
+      "delete": {
+        "tags": [
+          "Attachments"
+        ],
+        "summary": "Delete attachment",
+        "operationId": "deleteAttachment",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "attachmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attachment deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Attachment or expense not found"
+          }
+        }
+      }
+    },
+    "/attachments/{attachmentId}/download": {
+      "get": {
+        "tags": [
+          "Attachments"
+        ],
+        "summary": "Download attachment",
+        "operationId": "downloadAttachment",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "attachmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File downloaded",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Attachment not found"
           }
         }
       }
     },
     "/users": {
       "get": {
-        "tags": ["Users"],
-        "summary": "List all users in the authenticated user's company",
-        "description": "Retrieves a paginated list of users in the company. Only company admins can view all users.",
+        "tags": [
+          "Users"
+        ],
+        "summary": "List company users (admin only)",
         "operationId": "listUsers",
         "security": [
           {
@@ -555,21 +1683,37 @@
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination (default: 1)",
             "schema": {
               "type": "integer",
-              "default": 1,
-              "minimum": 1
+              "default": 1
             }
           },
           {
-            "name": "include",
+            "name": "per_page",
             "in": "query",
-            "description": "Include related resources. Options: company, expenses. Multiple values separated by comma.",
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["company", "expenses", "company,expenses"],
-              "example": "company,expenses"
+              "example": "john"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Admin",
+                "Manager",
+                "Employee"
+              ]
             }
           }
         ],
@@ -602,14 +1746,15 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Only admins can view users"
+            "description": "Admin access required"
           }
         }
       },
       "post": {
-        "tags": ["Users"],
-        "summary": "Create a new user",
-        "description": "Creates a new user in the company. Only company admins can create users.",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create new user (admin only)",
         "operationId": "createUser",
         "security": [
           {
@@ -622,39 +1767,36 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email", "password", "password_confirmation", "role"],
+                "required": [
+                  "name",
+                  "email",
+                  "role"
+                ],
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Full name of the user",
-                    "example": "Jane Smith",
                     "minLength": 2,
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "example": "Jane Smith"
                   },
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Email address (must be unique within company)",
                     "example": "jane@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "description": "Password (at least 8 characters)",
-                    "example": "SecurePassword123!",
-                    "minLength": 8
-                  },
-                  "password_confirmation": {
-                    "type": "string",
-                    "format": "password",
-                    "description": "Password confirmation (must match password)",
-                    "example": "SecurePassword123!"
                   },
                   "role": {
                     "type": "string",
-                    "enum": ["Admin", "Employee"],
-                    "description": "User role within the company",
-                    "example": "Employee"
+                    "enum": [
+                      "Admin",
+                      "Manager",
+                      "Employee"
+                    ],
+                    "example": "Manager"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "SecurePass123!"
                   }
                 }
               }
@@ -663,7 +1805,7 @@
         },
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "User created",
             "content": {
               "application/json": {
                 "schema": {
@@ -689,7 +1831,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Only admins can create users"
+            "description": "Admin access required"
           },
           "422": {
             "description": "Validation error"
@@ -699,9 +1841,10 @@
     },
     "/users/{userId}": {
       "put": {
-        "tags": ["Users"],
-        "summary": "Update a user's role",
-        "description": "Updates a user's role. Only the user themselves or company admins can update roles.",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user role (admin only)",
         "operationId": "updateUser",
         "security": [
           {
@@ -713,10 +1856,9 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "description": "ID of the user to update",
             "schema": {
               "type": "integer",
-              "example": 1
+              "example": 2
             }
           }
         ],
@@ -726,13 +1868,22 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["role"],
+                "required": [
+                  "role"
+                ],
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": ["Admin", "Employee"],
-                    "description": "New user role",
+                    "enum": [
+                      "Admin",
+                      "Manager",
+                      "Employee"
+                    ],
                     "example": "Admin"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Jane Smith Updated"
                   }
                 }
               }
@@ -741,7 +1892,7 @@
         },
         "responses": {
           "200": {
-            "description": "User updated successfully",
+            "description": "User updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -753,7 +1904,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "User role updated successfully"
+                      "example": "User updated successfully"
                     },
                     "data": {
                       "$ref": "#/components/schemas/UserResource"
@@ -767,7 +1918,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - User does not have permission to update this user"
+            "description": "Admin access required"
           },
           "404": {
             "description": "User not found"
@@ -778,12 +1929,13 @@
         }
       }
     },
-    "/logs": {
+    "/audit-logs": {
       "get": {
-        "tags": ["Audit Logs"],
-        "summary": "List audit logs for the company",
-        "description": "Retrieves paginated audit logs of all changes in the company. Only admins can view logs.",
-        "operationId": "listLogs",
+        "tags": [
+          "Audit Logs"
+        ],
+        "summary": "List audit logs (admin only)",
+        "operationId": "listAuditLogs",
         "security": [
           {
             "BearerToken": []
@@ -793,11 +1945,62 @@
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination (default: 1)",
             "schema": {
               "type": "integer",
-              "default": 1,
-              "minimum": 1
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "event",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated",
+                "deleted"
+              ],
+              "example": "created"
+            }
+          },
+          {
+            "name": "auditable_type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "App\\Models\\Expense"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           }
         ],
@@ -812,7 +2015,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/AuditLog"
+                        "$ref": "#/components/schemas/AuditLogResource"
                       }
                     },
                     "links": {
@@ -830,260 +2033,458 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Only admins can view logs"
+            "description": "Admin access required"
           }
         }
       }
-    }
-  },
-  "components": {
-    "schemas": {
-      "UserResource": {
-        "type": "object",
-        "description": "User resource with optional relationships",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "john@example.com"
-          },
-          "role": {
-            "type": "string",
-            "enum": ["Admin", "Employee"],
-            "example": "Admin"
-          },
-          "company_id": {
-            "type": "integer",
-            "example": 1
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-11-27T12:34:56.000000Z"
-          },
-          "company": {
-            "$ref": "#/components/schemas/CompanyResource",
-            "description": "Only included when ?include=company is passed"
-          },
-          "expenses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ExpenseResource"
-            },
-            "description": "Only included when ?include=expenses is passed"
+    },
+    "/dashboard/stats": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get dashboard statistics (manager+)",
+        "operationId": "getDashboardStats",
+        "security": [
+          {
+            "BearerToken": []
           }
-        }
-      },
-      "CompanyResource": {
-        "type": "object",
-        "description": "Company resource with optional relationships",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-01-01"
+            }
           },
-          "name": {
-            "type": "string",
-            "example": "ACME Corporation"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "contact@acme.com"
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserResource"
-            },
-            "description": "Only included when ?include=users is passed"
-          },
-          "expenses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ExpenseResource"
-            },
-            "description": "Only included when ?include=expenses is passed"
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-11-27"
+            }
           }
-        }
-      },
-      "ExpenseResource": {
-        "type": "object",
-        "description": "Expense resource with optional relationships",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "title": {
-            "type": "string",
-            "example": "Office Supplies"
-          },
-          "amount": {
-            "type": "number",
-            "format": "float",
-            "example": 150.50
-          },
-          "category": {
-            "type": "string",
-            "example": "Supplies"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-11-27T12:34:56.000000Z"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserResource",
-            "description": "Only included when ?include=user is passed"
-          },
-          "company": {
-            "$ref": "#/components/schemas/CompanyResource",
-            "description": "Only included when ?include=company is passed"
-          }
-        }
-      },
-      "AuditLog": {
-        "type": "object",
-        "description": "Audit log entry",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "action": {
-            "type": "string",
-            "enum": ["created", "updated", "deleted"],
-            "example": "updated"
-          },
-          "model": {
-            "type": "string",
-            "enum": ["Expense", "User"],
-            "example": "Expense"
-          },
-          "model_id": {
-            "type": "integer",
-            "example": 5
-          },
-          "user_id": {
-            "type": "integer",
-            "example": 1
-          },
-          "company_id": {
-            "type": "integer",
-            "example": 1
-          },
-          "changes": {
-            "type": "object",
-            "description": "What was changed (old_value => new_value)",
-            "example": {
-              "amount": {
-                "old": 150.00,
-                "new": 175.75
-              },
-              "title": {
-                "old": "Office Supplies",
-                "new": "Updated Office Supplies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total_expenses": {
+                          "type": "number",
+                          "example": 15850.75
+                        },
+                        "pending_expenses": {
+                          "type": "number",
+                          "example": 2450.0
+                        },
+                        "approved_expenses": {
+                          "type": "number",
+                          "example": 12900.75
+                        },
+                        "rejected_expenses": {
+                          "type": "number",
+                          "example": 500.0
+                        },
+                        "total_count": {
+                          "type": "integer",
+                          "example": 45
+                        },
+                        "pending_count": {
+                          "type": "integer",
+                          "example": 8
+                        },
+                        "approved_count": {
+                          "type": "integer",
+                          "example": 35
+                        },
+                        "rejected_count": {
+                          "type": "integer",
+                          "example": 2
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-11-27T12:34:56.000000Z"
-          }
-        }
-      },
-      "PaginationLinks": {
-        "type": "object",
-        "properties": {
-          "first": {
-            "type": "string",
-            "format": "uri",
-            "example": "http://localhost:8000/api/expenses?page=1"
+          "401": {
+            "description": "Unauthorized"
           },
-          "last": {
-            "type": "string",
-            "format": "uri",
-            "example": "http://localhost:8000/api/expenses?page=5"
-          },
-          "prev": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true,
-            "example": "http://localhost:8000/api/expenses?page=1"
-          },
-          "next": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true,
-            "example": "http://localhost:8000/api/expenses?page=3"
-          }
-        }
-      },
-      "PaginationMeta": {
-        "type": "object",
-        "properties": {
-          "current_page": {
-            "type": "integer",
-            "example": 2
-          },
-          "from": {
-            "type": "integer",
-            "example": 11
-          },
-          "last_page": {
-            "type": "integer",
-            "example": 5
-          },
-          "per_page": {
-            "type": "integer",
-            "example": 10
-          },
-          "to": {
-            "type": "integer",
-            "example": 20
-          },
-          "total": {
-            "type": "integer",
-            "example": 50
+          "403": {
+            "description": "Manager or Admin access required"
           }
         }
       }
     },
-    "securitySchemes": {
-      "BearerToken": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "token",
-        "description": "Laravel Sanctum API token. Obtain by calling /login or /register endpoint and use in Authorization header as: Authorization: Bearer {token}"
+    "/dashboard/spending-by-category": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get spending breakdown by category (manager+)",
+        "operationId": "getSpendingByCategory",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spending by category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category": {
+                            "type": "string",
+                            "example": "Supplies"
+                          },
+                          "total": {
+                            "type": "number",
+                            "example": 3500.0
+                          },
+                          "count": {
+                            "type": "integer",
+                            "example": 12
+                          },
+                          "percentage": {
+                            "type": "number",
+                            "example": 22.08
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Manager or Admin access required"
+          }
+        }
+      }
+    },
+    "/dashboard/top-expenses": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get top expenses (manager+)",
+        "operationId": "getTopExpenses",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "example": 10
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top expenses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ExpenseResource"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Manager or Admin access required"
+          }
+        }
+      }
+    },
+    "/dashboard/trends": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get expense trends over time (manager+)",
+        "operationId": "getExpenseTrends",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "monthly",
+              "example": "monthly"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense trends",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "period": {
+                            "type": "string",
+                            "example": "2026-11"
+                          },
+                          "total": {
+                            "type": "number",
+                            "example": 5234.50
+                          },
+                          "count": {
+                            "type": "integer",
+                            "example": 18
+                          },
+                          "approved": {
+                            "type": "number",
+                            "example": 4800.0
+                          },
+                          "pending": {
+                            "type": "number",
+                            "example": 350.0
+                          },
+                          "rejected": {
+                            "type": "number",
+                            "example": 84.5
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Manager or Admin access required"
+          }
+        }
+      }
+    },
+    "/dashboard/user-activity": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get user activity summary (admin only)",
+        "operationId": "getUserActivity",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User activity summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "example": 2
+                          },
+                          "user_name": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "total_expenses": {
+                            "type": "number",
+                            "example": 2450.0
+                          },
+                          "expense_count": {
+                            "type": "integer",
+                            "example": 8
+                          },
+                          "approved_count": {
+                            "type": "integer",
+                            "example": 7
+                          },
+                          "pending_count": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "rejected_count": {
+                            "type": "integer",
+                            "example": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Admin access required"
+          }
+        }
       }
     }
-  },
-  "tags": [
-    {
-      "name": "Authentication",
-      "description": "User registration and login endpoints"
-    },
-    {
-      "name": "Expenses",
-      "description": "Expense management operations"
-    },
-    {
-      "name": "Users",
-      "description": "User management operations"
-    },
-    {
-      "name": "Audit Logs",
-      "description": "Audit log viewing (admin only)"
-    }
-  ]
+  }
 }
