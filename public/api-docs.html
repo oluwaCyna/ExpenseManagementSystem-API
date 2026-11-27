@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management System API Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .topbar {
+            background-color: #1976d2;
+            padding: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .topbar-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        #swagger-ui {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div>
+            <h1>Expense Management System API</h1>
+            <div class="topbar-info">Complete API Documentation & Interactive Testing</div>
+        </div>
+        <div class="topbar-info">v1.0.0</div>
+    </div>
+    
+    <div id="swagger-ui"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js" charset="UTF-8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+    <script>
+        const ui = SwaggerUIBundle({
+            url: "/api-docs.json",
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+            defaultModelsExpandDepth: 1,
+            defaultModelExpandDepth: 1
+        })
+        window.onload = function() {
+            // Swagger UI loaded
+        }
+    </script>
+</body>
+</html>
