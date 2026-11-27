@@ -16,6 +16,7 @@ class CompanyResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'currency' => $this->currency,
             $this->mergeWhen($this->shouldInclude('users'), fn () => [
                 'users' => UserResource::collection($this->whenLoaded('users')),
             ]),

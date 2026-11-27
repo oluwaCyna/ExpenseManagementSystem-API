@@ -37,7 +37,7 @@ class ExportController extends Controller
         $csvData = [];
 
         // Add headers
-        $csvData[] = ['ID', 'Title', 'Amount', 'Category', 'User', 'Date', 'Created At'];
+        $csvData[] = ['ID', 'Title', 'Amount', 'Currency', 'Category', 'User', 'Date', 'Created At'];
 
         // Add data rows
         foreach ($data as $item) {
@@ -45,6 +45,7 @@ class ExportController extends Controller
                 $item->id,
                 $item->title,
                 $item->amount,
+                $item->currency,
                 $item->category,
                 $item->user->name ?? 'N/A',
                 $item->expense_date ?? 'N/A',
@@ -94,6 +95,7 @@ class ExportController extends Controller
                         <th>ID</th>
                         <th>Title</th>
                         <th>Amount</th>
+                        <th>Currency</th>
                         <th>Category</th>
                         <th>User</th>
                         <th>Date</th>
@@ -108,6 +110,7 @@ class ExportController extends Controller
                         <td>'.$expense->id.'</td>
                         <td>'.$expense->title.'</td>
                         <td>'.$expense->amount.'</td>
+                        <td>'.$expense->currency.'</td>
                         <td>'.$expense->category.'</td>
                         <td>'.($expense->user->name ?? 'N/A').'</td>
                         <td>'.($expense->expense_date ?? 'N/A').'</td>

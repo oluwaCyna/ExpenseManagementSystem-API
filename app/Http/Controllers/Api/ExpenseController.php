@@ -54,6 +54,7 @@ class ExpenseController extends Controller
             'title' => $validated['title'],
             'amount' => $validated['amount'],
             'category' => $validated['category'],
+            'currency' => $validated['currency'] ?? $user->company->currency,
             'user_id' => $user->id,
             'company_id' => $user->company_id,
         ]);

@@ -19,6 +19,7 @@ class CompanyFactory extends Factory
         return [
             'name' => fake()->unique()->company(),
             'email' => fake()->unique()->safeEmail(),
+            'currency' => fake()->randomElement(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF']),
         ];
     }
 }

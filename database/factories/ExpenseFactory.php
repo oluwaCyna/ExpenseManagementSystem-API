@@ -20,6 +20,7 @@ class ExpenseFactory extends Factory
             'title' => fake()->word(),
             'amount' => fake()->randomFloat(2, 10, 1000),
             'category' => fake()->word(),
+            'currency' => fake()->randomElement(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF']),
         ];
     }
 }

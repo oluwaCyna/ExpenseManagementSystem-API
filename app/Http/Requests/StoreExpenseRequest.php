@@ -18,6 +18,7 @@ class StoreExpenseRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
             'category' => ['required', 'string', 'in:'.implode(',', ExpenseCategory::labels())],
+            'currency' => ['nullable', 'string', 'size:3', 'regex:/^[A-Z]{3}$/'],
         ];
     }
 
@@ -34,6 +35,9 @@ class StoreExpenseRequest extends FormRequest
             'category.required' => 'Category is required.',
             'category.string' => 'Category must be a text value.',
             'category.in' => 'Invalid category selected. Valid categories are: '.implode(', ', ExpenseCategory::labels()),
+            'currency.string' => 'Currency must be a text value.',
+            'currency.size' => 'Currency code must be 3 characters.',
+            'currency.regex' => 'Currency code must be uppercase letters (e.g., USD, EUR, GBP).',
         ];
     }
 }

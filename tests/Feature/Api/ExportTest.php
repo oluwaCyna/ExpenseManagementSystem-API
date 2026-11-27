@@ -28,7 +28,7 @@ it('exports expenses as CSV', function () {
     $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
 
     $content = $response->getContent();
-    expect($content)->toContain('ID,Title,Amount,Category,User,Date,Created At');
+    expect($content)->toContain('ID,Title,Amount,Currency,Category,User,Date,Created At');
 });
 
 it('exports expenses as PDF', function () {
