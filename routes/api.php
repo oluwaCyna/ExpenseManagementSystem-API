@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\ExpenseAttachmentController;
 use App\Http\Controllers\Api\ExpenseController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\AuditLog;
@@ -30,6 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
     Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
     Route::post('/expenses/{expense}/restore', [ExpenseController::class, 'restore']);
+    Route::get('/expenses/export', [ExportController::class, 'expenses']);
 
     Route::get('/expenses/{expense}/attachments', [ExpenseAttachmentController::class, 'index']);
     Route::post('/expenses/{expense}/attachments', [ExpenseAttachmentController::class, 'store']);
