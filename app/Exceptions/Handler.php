@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Traits\ApiResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -37,6 +38,10 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($request->expectsJson()) {
+            if ($exception instanceof ValidationException) {
+                return $this->validationError($exception->errors(), 'Validation error');
+            }
+
             if ($exception instanceof NotFoundHttpException) {
                 return $this->notFound();
             }
@@ -49,9 +54,21 @@ class Handler extends ExceptionHandler
                 return $this->forbidden();
             }
 
-            return $this->error($exception->getMessage(), 500);
+            return $this->handleUncaughtException($exception);
         }
 
         return parent::render($request, $exception);
+    }
+
+    private function handleUncaughtException(Throwable $exception): \Illuminate\Http\JsonResponse
+    {
+        $status = 500;
+        $message = 'An error occurred';
+
+        if (config('app.debug')) {
+            $message = $exception->getMessage() ?: 'An error occurred';
+        }
+
+        return $this->error($message, $status);
     }
 }

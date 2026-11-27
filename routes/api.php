@@ -29,12 +29,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/logs', function () {
         if (! auth()->user()->isAdmin()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden'], 403);
         }
 
         return response()->json(AuditLog::authCompany()->latest()->paginate(20), 200);
     });
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware(['throttle:3,1'])->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+});

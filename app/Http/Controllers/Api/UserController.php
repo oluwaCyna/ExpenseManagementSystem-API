@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -38,18 +38,13 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         $admin = Auth::user();
 
         $this->authorize('create', User::class);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', Password::defaults()],
-            'role' => ['required', 'in:Admin,Manager,Employee'],
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -62,13 +57,11 @@ class UserController extends Controller
         return $this->success(new UserResource($user), 'User created successfully', 201);
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
         $this->authorize('update', $user);
 
-        $validated = $request->validate([
-            'role' => ['required', 'in:Admin,Manager,Employee'],
-        ]);
+        $validated = $request->validated();
 
         $user->update($validated);
 

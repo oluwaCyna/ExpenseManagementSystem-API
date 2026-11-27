@@ -3,26 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     use ApiResponse;
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $credentials = $request->validated();
 
         if (! Auth::attempt($request->only(['email', 'password']))) {
             return $this->unauthorized('Invalid credentials');
@@ -38,15 +35,9 @@ class AuthController extends Controller
         ], 'Login successful');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'company_email' => ['required', 'email', 'unique:companies,email'],
-            'company_name' => ['required', 'string', 'max:255', 'unique:companies,name'],
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, &$user, &$token) {
             $company = Company::create([

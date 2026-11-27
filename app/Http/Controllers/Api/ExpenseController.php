@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreExpenseRequest;
+use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
@@ -42,15 +43,11 @@ class ExpenseController extends Controller
         return ExpenseResource::collection($expenses);
     }
 
-    public function store(Request $request)
+    public function store(StoreExpenseRequest $request)
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric', 'min:0'],
-            'category' => ['required', 'string', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $expense = Expense::create([
             'title' => $validated['title'],
@@ -63,15 +60,11 @@ class ExpenseController extends Controller
         return $this->success(new ExpenseResource($expense), 'Expense created successfully', 201);
     }
 
-    public function update(Request $request, Expense $expense)
+    public function update(UpdateExpenseRequest $request, Expense $expense)
     {
         $this->authorize('update', $expense);
 
-        $validated = $request->validate([
-            'title' => ['string', 'max:255'],
-            'amount' => ['numeric', 'min:0'],
-            'category' => ['sometimes', 'string', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $expense->update($validated);
 
